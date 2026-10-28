@@ -4,13 +4,13 @@
 
 Sbírka bezplatných kancelářských nástrojů, které běží přímo v prohlížeči. Soubory se **nikam neodesílají** – vše se zpracovává ve vašem počítači.
 
-**Rozcestník:** `https://<vas-ucet>.github.io/kancelarske-aplikace/`
+**Spustit:** [andytoolbox.github.io/kancelarske-aplikace](https://andytoolbox.github.io/kancelarske-aplikace/)
 
 ## Aplikace
 
 | | Aplikace | Adresa |
 |---|---|---|
-| <img src="pdf/icon.svg" width="48" alt=""> | **Andy PDF** – úpravy PDF | [`/pdf/`](pdf/) |
+| <img src="pdf/icon.svg" width="48" alt=""> | **Andy PDF** – úpravy PDF | [Otevřít Andy PDF](https://andytoolbox.github.io/kancelarske-aplikace/pdf/) |
 
 ---
 
@@ -48,8 +48,8 @@ Písma jsou zmenšená na latinku (včetně češtiny), řečtinu a azbuku.
 ## Jak zveřejnit na GitHubu
 
 1. Vytvořte veřejný repozitář (úložiště) `kancelarske-aplikace`: https://github.com/new
-2. Nahrajte do něj **obsah** této složky (včetně složky `pdf`): `https://github.com/<vas-ucet>/kancelarske-aplikace/upload`
-3. Zapněte GitHub Pages: `https://github.com/<vas-ucet>/kancelarske-aplikace/settings/pages` → Branch `main` → Save.
+2. Nahrajte do něj **obsah** této složky (včetně složky `pdf`): `https://github.com/andytoolbox/kancelarske-aplikace/upload`
+3. Zapněte GitHub Pages: `https://github.com/andytoolbox/kancelarske-aplikace/settings/pages` → Branch `main` → Save.
 
 ## Jak přidat další aplikaci
 
