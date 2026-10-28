@@ -1,4 +1,4 @@
-<p align="center"><img src="apps.svg" width="110" alt="Kancelářské aplikace"></p>
+<p align="center"><img src="apps.svg" width="150" alt="Kancelářské aplikace – žralok s deskami a tužkou"></p>
 
 # Kancelářské aplikace
 
