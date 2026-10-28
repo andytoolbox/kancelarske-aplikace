@@ -64,7 +64,8 @@ Do všech polí lze psát i výpočty, např. `1200*3`.
 ## Andy Kalendář
 
 - **Klasický český kalendář:** státní svátky (včetně Velikonoc), jmeniny na každý den, čísla týdnů, volitelně významné dny (Den matek, advent, změna času…)
-- **Tři zobrazení:** měsíc jako nástěnný kalendář, týden jako diář s poznámkami, celý rok na jedné stránce
+- **Čtyři zobrazení:** měsíc jako nástěnný kalendář, týden jako diář s poznámkami, celý rok na jedné stránce a **pracovní fond**
+- **Fond pracovní doby:** roční plánovací kalendář s počtem pracovních dnů a hodin za týden, dekádu, měsíc, čtvrtletí, pololetí a rok; úvazky 40 / 38,75 / 37,5 h nebo vlastní, zkrácený úvazek v %, režim „fond vč. svátků“ i „jen odpracované dny“, export do Excelu (CSV) a tisk
 - **Události:** čas, místo, poznámka, barva, vícedenní akce; opakování denně, každý pracovní den, týdně, po 2 týdnech, měsíčně, ročně (narozeniny); smazání jen jednoho výskytu
 - **Úkoly:** s termínem i bez, po termínu / dnes / nadcházející, odškrtávání
 - **Tisk** měsíce, týdne i roku; **záloha** do souboru a **export do Outlooku / Google Kalendáře** (.ics)

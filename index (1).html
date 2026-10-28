@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andy Kalendář – české svátky, jmeniny a plánování</title>
+<meta name="description" content="Bezplatný český kalendář se státními svátky a jmeninami. Měsíc, týden i celý rok, události, opakování, úkoly a tisk.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --bg:#EFF5FB;--surface:#FFFFFF;--paper:#FFFEFB;--ink:#172A3A;--muted:#5A6B7C;--line:#D5E1EE;--line2:#E8EEF5;
+  --accent:#2B6CB0;--accent-ink:#FFFFFF;--soft:#E1EDF9;--hi:#7CC4F0;--red:#B3261E;--red-soft:#FCEDEC;--sat:#3F6E9E;
+  --other:#A9B6C3;--today:#2B6CB0;--danger:#B3261E;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,Cambria,"Times New Roman",serif;
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1720;--surface:#17222E;--paper:#151F2A;--ink:#E6EEF6;--muted:#9FB2C4;--line:#2A3A4B;--line2:#223040;
+  --accent:#7DB5EC;--accent-ink:#0F1720;--soft:#1E3044;--hi:#7CC4F0;--red:#F2867E;--red-soft:#3A2224;--sat:#8DB6DE;--other:#4E5F70;--today:#7DB5EC;--danger:#F2867E;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1720;--surface:#17222E;--paper:#151F2A;--ink:#E6EEF6;--muted:#9FB2C4;--line:#2A3A4B;--line2:#223040;
+  --accent:#7DB5EC;--accent-ink:#0F1720;--soft:#1E3044;--hi:#7CC4F0;--red:#F2867E;--red-soft:#3A2224;--sat:#8DB6DE;--other:#4E5F70;--today:#7DB5EC;--danger:#F2867E;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.45;min-height:100vh;display:flex;flex-direction:column}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+[hidden]{display:none!important}
+h1,h2,h3{line-height:1.2;margin:0}
+
+.top{display:flex;align-items:center;gap:12px;padding:16px clamp(14px,2.5vw,28px) 10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;min-width:0}
+.brand h1{font-size:1.4rem;letter-spacing:-.01em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;white-space:nowrap}
+.btn:hover{border-color:var(--accent);background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
+.btn.sm{min-height:30px;padding:3px 10px;font-size:.86rem}
+.btn.danger{color:var(--danger)}
+.ib{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;width:38px;height:38px;display:grid;place-items:center;cursor:pointer;padding:0}
+.ib:hover{border-color:var(--accent);background:var(--soft)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{appearance:none;border:0;border-right:1px solid var(--line);background:none;padding:7px 14px;cursor:pointer;font-weight:600}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 clamp(14px,2.5vw,28px) 14px}
+.toolbar .title{font-family:var(--serif);font-size:1.75rem;font-weight:700;min-width:12ch;margin:0 6px;letter-spacing:.01em}
+.toolbar .sp{flex:1}
+.menuwrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:6px;z-index:20;min-width:260px}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;border-radius:6px;cursor:pointer}
+.menu button:hover{background:var(--soft)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;padding:0 clamp(14px,2.5vw,28px) 24px;flex:1;align-items:start}
+@media (max-width:1050px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.side{display:flex;flex-direction:column;gap:18px;position:sticky;top:12px}
+@media (max-width:1050px){.side{position:static}}
+.hint{color:var(--muted);font-size:.88rem;margin:0}
+
+/* měsíc */
+.month{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mhead{display:grid;grid-template-columns:34px repeat(7,1fr);border-bottom:1px solid var(--line);background:var(--surface)}
+.mhead div{padding:8px 8px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.mhead div.sun{color:var(--red)}
+.mgrid{display:grid;grid-template-columns:34px repeat(7,1fr)}
+.wk{font-size:.72rem;color:var(--muted);padding:8px 4px;text-align:center;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);background:var(--surface)}
+.cell{min-height:118px;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:6px 7px 6px;display:flex;flex-direction:column;gap:2px;cursor:pointer;position:relative;min-width:0}
+.cell:nth-child(8n){border-right:0}
+.cell:hover{background:var(--soft)}
+.cell.other{background:transparent}
+.cell.other .dn,.cell.other .nm{color:var(--other)}
+.cell.sel{box-shadow:inset 0 0 0 2px var(--accent)}
+.cell.hol{background:var(--red-soft)}
+.dtop{display:flex;align-items:baseline;gap:6px;min-width:0}
+.dn{font-family:var(--serif);font-size:1.45rem;font-weight:700;line-height:1;min-width:1.6ch}
+.cell.sun .dn,.cell.hol .dn{color:var(--red)}
+.cell.sat .dn{color:var(--sat)}
+.cell.today .dn{background:var(--today);color:var(--accent-ink)!important;border-radius:50%;width:1.9em;height:1.9em;display:inline-grid;place-items:center;font-size:1.05rem;margin:-2px 0 0 -3px}
+.nm{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic;min-width:0}
+.holname{font-size:.72rem;color:var(--red);font-weight:600;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sig{font-size:.7rem;color:var(--sat);line-height:1.2}
+.chips{display:flex;flex-direction:column;gap:2px;margin-top:2px;min-width:0}
+.chip{font-size:.76rem;border-radius:5px;padding:1px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#fff;border:0;text-align:left;min-width:0}
+.chip.timed{background:transparent!important;color:var(--ink);padding-left:2px}
+.chip.timed::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:4px;vertical-align:1px}
+.chip.task{background:transparent!important;color:var(--ink);padding-left:2px}
+.chip.task.done{text-decoration:line-through;color:var(--muted)}
+.more{font-size:.72rem;color:var(--muted);padding-left:4px}
+
+/* týden (diář) */
+.week{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(4,auto);grid-auto-flow:column;gap:14px}
+@media (max-width:700px){.week{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}}
+.wnotes{background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.wnotes h3{font-family:var(--serif);font-size:1.05rem}
+.wnotes textarea{flex:1;min-height:120px;border:0;background:repeating-linear-gradient(to bottom,transparent 0 25px,var(--line2) 25px 26px);line-height:26px;resize:vertical;font-size:.95rem;padding:0 2px;outline:none}
+.wday{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:150px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.wday:hover{border-color:var(--accent)}
+.wday.sel{box-shadow:0 0 0 2px var(--accent)}
+.wday.hol{background:var(--red-soft)}
+.whead{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.whead .dn{font-size:2rem}
+.whead .wdname{font-family:var(--serif);font-size:1.1rem;font-weight:600}
+.whead .nm{margin-left:auto;font-size:.85rem}
+.wday.sun .dn,.wday.hol .dn,.wday.sun .wdname,.wday.hol .wdname{color:var(--red)}
+.wday.today .whead{border-bottom:2px solid var(--today)}
+.witem{display:flex;gap:8px;align-items:baseline;font-size:.92rem;padding:3px 4px;border-radius:6px;cursor:pointer}
+.witem:hover{background:var(--soft)}
+.witem .tm{font-variant-numeric:tabular-nums;color:var(--muted);min-width:88px;font-size:.85rem}
+.witem .dot{width:9px;height:9px;border-radius:50%;flex:none;transform:translateY(1px)}
+.witem .pl{color:var(--muted);font-size:.84rem}
+.lines{flex:1;background-image:repeating-linear-gradient(to bottom,transparent 0 25px,var(--line2) 25px 26px);min-height:52px;border-radius:4px}
+
+@media (max-width:640px){
+  .cell{min-height:62px;padding:4px 3px}
+  .dn{font-size:1.1rem}
+  .cell.today .dn{font-size:.9rem}
+  .nm,.holname,.sig,.more{display:none}
+  .chips{flex-direction:row;flex-wrap:wrap;gap:3px}
+  .chip{font-size:0!important;width:8px;height:8px;padding:0;border-radius:50%;flex:none}
+  .chip.timed{background:var(--c)!important}
+  .chip.timed::before{display:none}
+  .chip.task{background:var(--muted)!important}
+  .mgrid,.mhead{grid-template-columns:22px repeat(7,1fr)}
+  .wk{font-size:.62rem;padding:6px 1px}
+  .mhead div{padding:6px 2px;text-align:center}
+  .toolbar .title{font-size:1.35rem;min-width:0}
+}
+/* rok */
+.year{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.ym{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ym h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:6px;cursor:pointer}
+.ym h3:hover{color:var(--accent)}
+.yg{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;text-align:center;font-size:.82rem}
+.yg .h{font-size:.66rem;font-weight:700;color:var(--muted);padding:2px 0}
+.yg .h.sun{color:var(--red)}
+.yg .d{padding:4px 0;border-radius:6px;cursor:pointer;position:relative;font-variant-numeric:tabular-nums}
+.yg .d:hover{background:var(--soft)}
+.yg .d.sun,.yg .d.hol{color:var(--red);font-weight:700}
+.yg .d.hol{background:var(--red-soft)}
+.yg .d.today{background:var(--today);color:var(--accent-ink)!important}
+.yg .d.has::after{content:"";position:absolute;left:50%;bottom:1px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--accent)}
+
+/* pracovní fond */
+body.view-fond .layout{grid-template-columns:1fr}
+body.view-fond .side{display:none}
+body.view-fond .fyear{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.fset{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:16px}
+.fset .field{max-width:220px}
+.fset .note{flex-basis:100%;color:var(--muted);font-size:.85rem;margin:0}
+.fsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.fsum div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.fsum b{display:block;font-family:var(--serif);font-size:1.7rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.fsum span{color:var(--muted);font-size:.85rem}
+.fsum .main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fsum .main span{color:inherit;opacity:.85}
+.fyear{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-bottom:22px}
+.fm{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.fm h3{font-family:var(--serif);font-size:1.08rem;margin-bottom:4px;display:flex;justify-content:space-between;align-items:baseline}
+.fm h3 small{font-family:inherit;font-size:.82rem;color:var(--accent);font-weight:700}
+.fm .yg .d.work{background:var(--soft)}
+.fm .yg .d{cursor:default}
+.fm .dek{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px;font-size:.74rem;text-align:center}
+.fm .dek div{background:var(--bg);border-radius:6px;padding:3px 2px;font-variant-numeric:tabular-nums}
+.fm .dek div i{display:block;color:var(--muted);font-style:normal;font-size:.68rem}
+.ftable{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.9rem;margin-bottom:22px}
+.ftable th,.ftable td{padding:7px 9px;border-bottom:1px solid var(--line2);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ftable th{background:var(--surface);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);position:sticky;top:0}
+.ftable th:first-child,.ftable td:first-child{text-align:left}
+.ftable tr.q td{background:var(--soft);font-weight:700}
+.ftable tr.h td{background:var(--soft);font-weight:800;border-top:2px solid var(--accent)}
+.ftable tr.y td{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.ftable td.hl{color:var(--red)}
+.ftable .muted{color:var(--muted)}
+.fwrap{overflow-x:auto;border-radius:12px}
+.fh2{font-family:var(--serif);font-size:1.25rem;margin:0 0 10px}
+.weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:22px}
+.wkc{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:.84rem}
+.wkc b{font-family:var(--serif);font-size:1rem}
+.wkc .r{display:flex;justify-content:space-between;color:var(--muted)}
+.wkc .r strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.wkc.part{border-style:dashed}
+.wkc.holw{border-color:var(--red)}
+
+/* boční panel */
+.daytitle{font-family:var(--serif);font-size:1.35rem;font-weight:700}
+.daysub{color:var(--muted)}
+.tagred{color:var(--red);font-weight:600}
+.dlist{display:flex;flex-direction:column;gap:6px}
+.ditem{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--paper)}
+.ditem:hover{border-color:var(--accent)}
+.ditem .bar{width:4px;align-self:stretch;border-radius:4px;flex:none}
+.ditem .t{font-weight:600}
+.ditem .m{color:var(--muted);font-size:.85rem}
+.taskadd{display:flex;gap:6px;flex-wrap:wrap}
+.taskadd input[type=text]{flex:1;min-width:140px}
+.inp{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:7px 10px;font-size:.95rem;min-width:0}
+.tgroup h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:6px 0 4px}
+.tgroup h3.late{color:var(--red)}
+.task{display:flex;gap:8px;align-items:flex-start;padding:5px 4px;border-radius:6px}
+.task:hover{background:var(--soft)}
+.task input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex:none;cursor:pointer}
+.task .tt{flex:1;min-width:0;word-break:break-word}
+.task .td{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.task.done .tt{text-decoration:line-through;color:var(--muted)}
+.task .x{border:0;background:none;color:var(--muted);cursor:pointer;padding:0 4px;font-size:1rem;opacity:0}
+.task:hover .x,.task:focus-within .x{opacity:1}
+details summary{cursor:pointer;color:var(--muted);font-size:.88rem}
+
+/* dialog */
+dialog{border:1px solid var(--line);border-radius:14px;padding:0;background:var(--surface);color:var(--ink);width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 24px)}
+dialog::backdrop{background:rgba(10,20,30,.5)}
+.dlg{padding:20px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{font-size:1.2rem}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.88rem;font-weight:600;min-width:0}
+.field input,.field select,.field textarea{font-weight:400;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:1rem;width:100%;min-width:0}
+.field textarea{resize:vertical;min-height:70px}
+.row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.row>.field{flex:1;min-width:120px}
+.check{display:flex;gap:8px;align-items:center;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.colors{display:flex;gap:8px}
+.colors button{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.colors button[aria-checked="true"]{box-shadow:0 0 0 3px var(--hi)}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;align-items:center}
+.actions .left{margin-right:auto}
+
+footer{padding:0 clamp(14px,2.5vw,28px) 22px;color:var(--muted);font-size:.84rem;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between}
+footer a{color:inherit}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:50;display:flex;gap:12px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.toast button{background:none;border:0;color:var(--hi);font-weight:700;cursor:pointer}
+
+/* tisk */
+.ptitle{display:none}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--paper:#fff;--ink:#000;--muted:#444;--line:#999;--line2:#bbb;--red:#C00;--red-soft:#fff3f2;--soft:#fff;--other:#aaa;color-scheme:light}
+  body{background:#fff}
+  .top,.toolbar,.side,footer,.toast,dialog{display:none!important}
+  .layout{display:block;padding:0}
+  .ptitle{display:block;font-family:var(--serif);font-size:24pt;font-weight:700;margin:0 0 8pt}
+  .month,.ym,.wday{border-color:#999;break-inside:avoid}
+  .cell{min-height:0;height:var(--ph,100px);cursor:default}
+  .cell.today .dn{background:none;color:inherit!important;width:auto;height:auto;margin:0;font-size:1.45rem;display:inline}
+  .cell.sel,.wday.sel{box-shadow:none}
+  .chip{color:#000!important;background:transparent!important;border:1px solid #888;padding:0 3px}
+  .yg .d.today{background:none;color:inherit!important}
+  body.p-month .cell{height:calc((100vh - 120px) / var(--weeks,6))}
+  .wnotes textarea{border:0}
+  body.p-fond .fset{display:none}
+  body.p-fond .fm,body.p-fond .ftable tr{break-inside:avoid}
+  body.p-fond .ftable th{position:static}
+  body.p-fond .fsum .main{background:#fff;color:#000;border:2px solid #000}
+  body.p-fond{font-size:9pt}
+  body.p-fond .ptitle{font-size:16pt;margin-bottom:4pt}
+  body.p-fond .fsum{grid-template-columns:repeat(6,1fr);gap:4pt;margin-bottom:6pt}
+  body.p-fond .fsum div{padding:4pt 6pt}
+  body.p-fond .fsum b{font-size:12pt}
+  body.p-fond .fsum span{font-size:7pt}
+  body.p-fond .fh2{font-size:11pt;margin:4pt 0}
+  body.p-fond .fyear{grid-template-columns:repeat(4,1fr);gap:5pt;margin-bottom:6pt}
+  body.p-fond .fm{padding:4pt 5pt}
+  body.p-fond .fm h3{font-size:9pt;margin-bottom:2pt}
+  body.p-fond .fm h3 small{font-size:7pt}
+  body.p-fond .yg{font-size:6.5pt}
+  body.p-fond .yg .d{padding:1pt 0}
+  body.p-fond .yg .h{font-size:5.5pt}
+  body.p-fond .fm .dek{font-size:5.8pt;gap:2pt;margin-top:3pt}
+  body.p-fond .fm .dek div{padding:1pt}
+  body.p-fond .fm .dek div i{font-size:5.5pt}
+  body.p-fond .fwrap{overflow:visible}
+  body.p-fond .ftable{font-size:7.5pt}
+  body.p-fond .fh2.brk{break-before:page}
+  body.p-fond .ftable th,body.p-fond .ftable td{padding:2.5pt 4pt}
+  body.p-fond .ftable th{font-size:6.5pt;white-space:normal}
+  body.p-fond .weeks{grid-template-columns:repeat(9,1fr);gap:3pt}
+  body.p-fond .wkc{padding:2pt 4pt;font-size:6.5pt}
+  body.p-fond .wkc b{font-size:7.5pt}
+  @page{margin:10mm}
+}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <img src="icon.svg" width="58" height="58" alt="" style="flex:none">
+    <div><h1>Andy Kalendář</h1><p>České svátky, jmeniny a plánování. Vše se ukládá jen ve vašem prohlížeči.</p></div>
+  </div>
+  <button class="btn primary" id="newEvent">
+    <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nová událost</button>
+</header>
+
+<div class="toolbar">
+  <div class="seg" role="group" aria-label="Zobrazení">
+    <button data-view="month" aria-pressed="true">Měsíc</button>
+    <button data-view="week" aria-pressed="false">Týden</button>
+    <button data-view="year" aria-pressed="false">Rok</button>
+    <button data-view="fond" aria-pressed="false">Pracovní fond</button>
+  </div>
+  <button class="ib" id="prev" aria-label="Předchozí"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="btn" id="today">Dnes</button>
+  <button class="ib" id="next" aria-label="Další"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  <h2 class="title" id="title" aria-live="polite"></h2>
+  <span class="sp"></span>
+  <label class="check" style="font-size:.9rem"><input type="checkbox" id="showSig" checked> Významné dny</label>
+  <button class="btn" id="printBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7"/></svg>Tisk</button>
+  <div class="menuwrap">
+    <button class="btn" id="moreBtn" aria-haspopup="true" aria-expanded="false">Záloha a export</button>
+    <div class="menu" id="moreMenu" hidden>
+      <button id="mExport">Uložit zálohu (soubor .json)</button>
+      <button id="mImport">Obnovit ze zálohy…</button>
+      <hr>
+      <button id="mIcs">Export do Outlooku / Google (.ics)</button>
+      <hr>
+      <button id="mClearDone">Smazat hotové úkoly</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<div class="layout">
+  <main id="view"></main>
+  <aside class="side">
+    <section class="panel" id="dayPanel" aria-label="Vybraný den"></section>
+    <section class="panel" aria-label="Úkoly">
+      <h2 style="font-size:1.1rem">Úkoly</h2>
+      <div class="taskadd">
+        <input type="text" class="inp" id="taskTitle" placeholder="Nový úkol…" aria-label="Nový úkol">
+        <input type="date" class="inp" id="taskDue" aria-label="Termín (nepovinný)" title="Termín (nepovinný)">
+        <button class="btn sm primary" id="taskAdd">Přidat</button>
+      </div>
+      <div id="taskList"></div>
+    </section>
+  </aside>
+</div>
+
+<footer><span><a href="../index.html">Všechny kancelářské aplikace</a> · Jmeniny: namedays-cs (MIT)</span><i>Created by Julius Andy Antoš</i></footer>
+
+<dialog id="dlgEvent" aria-labelledby="deT"><div class="dlg">
+  <h2 id="deT">Nová událost</h2>
+  <label class="field"><span>Název</span><input id="eTitle" placeholder="Např. Porada, Narozeniny Jany…"></label>
+  <div class="row">
+    <label class="field"><span>Datum</span><input type="date" id="eDate"></label>
+    <label class="field" id="eEndWrap"><span>Do (vícedenní)</span><input type="date" id="eEnd"></label>
+  </div>
+  <label class="check"><input type="checkbox" id="eAllDay"> Celý den</label>
+  <div class="row" id="eTimes">
+    <label class="field"><span>Od</span><input type="time" id="eFrom" value="09:00"></label>
+    <label class="field"><span>Do</span><input type="time" id="eTo" value="10:00"></label>
+  </div>
+  <label class="field"><span>Místo</span><input id="ePlace" placeholder="Nepovinné"></label>
+  <label class="field"><span>Poznámka</span><textarea id="eNote" placeholder="Nepovinné"></textarea></label>
+  <div class="row">
+    <label class="field"><span>Opakovat</span>
+      <select id="eRep"><option value="none">Neopakovat</option><option value="daily">Každý den</option><option value="weekdays">Každý pracovní den</option><option value="weekly">Každý týden</option><option value="biweekly">Každé 2 týdny</option><option value="monthly">Každý měsíc</option><option value="yearly">Každý rok (narozeniny, výročí)</option></select></label>
+    <label class="field" id="eUntilWrap" hidden><span>Opakovat do (nepovinné)</span><input type="date" id="eUntil"></label>
+  </div>
+  <div><div class="field" style="margin-bottom:6px"><span>Barva</span></div><div class="colors" id="eColors" role="radiogroup" aria-label="Barva"></div></div>
+  <p class="hint" id="eRepHint" hidden>Změny se uloží pro celou opakovanou řadu.</p>
+  <div class="actions">
+    <button class="btn danger left" id="eDelete" hidden>Smazat</button>
+    <button class="btn" data-close>Zrušit</button>
+    <button class="btn primary" id="eSave">Uložit</button>
+  </div>
+</div></dialog>
+
+<dialog id="dlgDelete" aria-labelledby="ddT"><div class="dlg">
+  <h2 id="ddT">Smazat opakovanou událost</h2>
+  <p class="hint">Chcete smazat jen tento den, nebo celou řadu?</p>
+  <div class="actions">
+    <button class="btn" data-close>Zrušit</button>
+    <button class="btn" id="delOne">Jen tento den</button>
+    <button class="btn danger" id="delAll">Celou řadu</button>
+  </div>
+</div></dialog>
+
+<div class="toast" id="toast" role="status" hidden><span id="toastMsg"></span><button id="toastAct" hidden></button></div>
+<script src="jmeniny.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
