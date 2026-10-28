@@ -91,9 +91,10 @@ const REP_TEXT = {daily: "každý den", weekdays: "každý pracovní den", weekl
 /* ---------- vykreslení ---------- */
 function render() {
   $$(".seg [data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === S.view));
+  document.body.classList.toggle("view-fond", S.view === "fond");
   $("#showSig").checked = S.showSig;
   const v = $("#view"); v.innerHTML = "";
-  if (S.view === "month") renderMonth(v); else if (S.view === "week") renderWeek(v); else renderYear(v);
+  if (S.view === "month") renderMonth(v); else if (S.view === "week") renderWeek(v); else if (S.view === "fond") renderFond(v); else renderYear(v);
   renderDay(); renderTasks();
   store.set("view", S.view);
 }
@@ -208,6 +209,103 @@ function taskRow(k) {
   return `<div class="task${k.done ? " done" : ""}"><input type="checkbox" data-done="${k.id}" ${k.done ? "checked" : ""} aria-label="Hotovo: ${esc(k.title)}"><span class="tt">${esc(k.title)}</span>${due ? `<button class="td" data-goto="${k.due}" style="border:0;background:none;cursor:pointer;padding:0" title="Ukázat v kalendáři">${due}</button>` : ""}<button class="x" data-deltask="${k.id}" aria-label="Smazat úkol" title="Smazat">×</button></div>`;
 }
 
+/* ---------- pracovní fond ---------- */
+const FOND = Object.assign({weekly: 40, custom: 30, uvazek: 100, mode: "fond"}, store.get("fond", {}));
+const nfH = new Intl.NumberFormat("cs-CZ", {maximumFractionDigits: 2});
+const fH = x => nfH.format(Math.round(x * 100) / 100);
+function dayHours() { const w = FOND.weekly === "custom" ? +FOND.custom || 0 : +FOND.weekly; return w / 5 * (Math.min(Math.max(+FOND.uvazek || 0, 0), 100) / 100); }
+function stats(a, b) {   // a, b včetně
+  const r = {kal: 0, wend: 0, mf: 0, hol: 0, work: 0};
+  for (let t = a; t <= b; t += DAY) { r.kal++; if (isWeekend(t)) r.wend++; else { r.mf++; if (holiday(t)) r.hol++; else r.work++; } }
+  const h = dayHours(); r.days = FOND.mode === "fond" ? r.mf : r.work; r.hours = r.days * h; r.fondH = r.mf * h; r.workH = r.work * h; r.holH = r.hol * h;
+  return r;
+}
+const monthEnd = (y, m) => Date.UTC(y, m + 1, 0);
+function fondRows(y) {
+  const months = [...Array(12).keys()].map(m => ({label: MONTHS[m], kind: "m", m, a: Date.UTC(y, m, 1), b: monthEnd(y, m)}));
+  const rows = [];
+  const q = i => ({label: `${i + 1}. čtvrtletí`, kind: "q", a: Date.UTC(y, i * 3, 1), b: monthEnd(y, i * 3 + 2)});
+  const h = i => ({label: `${i + 1}. pololetí`, kind: "h", a: Date.UTC(y, i * 6, 1), b: monthEnd(y, i * 6 + 5)});
+  for (let i = 0; i < 4; i++) { rows.push(...months.slice(i * 3, i * 3 + 3), q(i)); if (i % 2 === 1) rows.push(h((i - 1) / 2)); }
+  rows.push({label: `Rok ${y}`, kind: "y", a: Date.UTC(y, 0, 1), b: Date.UTC(y, 11, 31)});
+  return rows;
+}
+const decades = (y, m) => [[1, 10], [11, 20], [21, new Date(monthEnd(y, m)).getUTCDate()]].map(([f, l]) => ({f, l, ...stats(Date.UTC(y, m, f), Date.UTC(y, m, l))}));
+function weeksOf(y) {
+  const out = []; let mon = Date.UTC(y, 0, 1) - dow(Date.UTC(y, 0, 1)) * DAY;
+  while (mon <= Date.UTC(y, 11, 31)) {
+    const sun = mon + 6 * DAY, a = Math.max(mon, Date.UTC(y, 0, 1)), b = Math.min(sun, Date.UTC(y, 11, 31));
+    const st = stats(a, b), hols = []; for (let t = a; t <= b; t += DAY) if (!isWeekend(t) && holiday(t)) hols.push(t);
+    out.push({n: isoWeek(mon), mon, sun, a, b, part: a !== mon || b !== sun, hols, ...st}); mon += 7 * DAY;
+  }
+  return out;
+}
+function renderFond(host) {
+  const y = Y(S.cur), h = dayHours(), year = stats(Date.UTC(y, 0, 1), Date.UTC(y, 11, 31)), modeFond = FOND.mode === "fond";
+  $("#title").textContent = `Pracovní fond ${y}`;
+  const unitLabel = modeFond ? "fond" : "k odpracování";
+  let html = `<div class="ptitle">Fond pracovní doby ${y}</div>
+  <div class="fset">
+    <label class="field"><span>Týdenní pracovní doba</span><select id="fWeekly"><option value="40">40 h (8 h denně)</option><option value="38.75">38,75 h (7,75 h denně)</option><option value="37.5">37,5 h (7,5 h denně)</option><option value="custom">Vlastní…</option></select></label>
+    <label class="field" id="fCustomWrap" ${FOND.weekly === "custom" ? "" : "hidden"} style="max-width:120px"><span>Hodin týdně</span><input id="fCustom" type="number" min="1" max="60" step="0.25" value="${FOND.custom}"></label>
+    <label class="field" style="max-width:120px"><span>Úvazek %</span><input id="fUvazek" type="number" min="1" max="100" step="5" value="${FOND.uvazek}"></label>
+    <div><div class="field" style="margin-bottom:4px"><span>Počítat</span></div><div class="seg" role="group" aria-label="Způsob výpočtu">
+      <button data-fmode="fond" aria-pressed="${modeFond}">Fond pracovní doby</button><button data-fmode="work" aria-pressed="${!modeFond}">Jen odpracované dny</button></div></div>
+    <button class="btn" id="fCsv">Export do Excelu (CSV)</button>
+    <p class="note">${modeFond ? "Fond pracovní doby: pracovní dny pondělí–pátek včetně státních svátků, které na ně připadají (svátek se do fondu započítává)." : "Jen odpracované dny: pracovní dny pondělí–pátek bez státních svátků – kolik dní a hodin se skutečně odpracuje."} Denní pracovní doba: <b>${fH(h)} h</b>.</p>
+  </div>
+  <div class="fsum">
+    <div class="main"><b>${fH(year.hours)} h</b><span>${modeFond ? "Fond pracovní doby" : "K odpracování"} za rok</span></div>
+    <div><b>${year.days}</b><span>${modeFond ? "Pracovních dnů (vč. svátků)" : "Odpracovaných dnů"}</span></div>
+    <div><b>${year.hol}</b><span>Svátků v pracovní dny (${fH(year.holH)} h)</span></div>
+    <div><b>${modeFond ? fH(year.workH) : fH(year.fondH)} h</b><span>${modeFond ? `K odpracování bez svátků (${year.work} dní)` : `Fond vč. svátků (${year.mf} dní)`}</span></div>
+    <div><b>${year.wend}</b><span>Víkendových dnů</span></div>
+    <div><b>${year.kal}</b><span>Kalendářních dnů</span></div>
+  </div>
+  <h2 class="fh2">Roční plánovací kalendář</h2><div class="fyear">`;
+  for (let m = 0; m < 12; m++) {
+    const first = Date.UTC(y, m, 1), last = new Date(monthEnd(y, m)).getUTCDate(), ms = stats(first, monthEnd(y, m)), dk = decades(y, m);
+    html += `<div class="fm"><h3>${MONTHS[m]} <small>${ms.days} d · ${fH(ms.hours)} h</small></h3><div class="yg">${WD_S.map((d, i) => `<div class="h${i === 6 ? " sun" : ""}">${d}</div>`).join("")}${"<div></div>".repeat(dow(first))}`;
+    for (let d = 1; d <= last; d++) {
+      const t = Date.UTC(y, m, d), hol = holiday(t), cls = ["d"];
+      if (dow(t) === 6) cls.push("sun"); if (hol) cls.push("hol"); else if (!isWeekend(t)) cls.push("work"); if (t === todayT()) cls.push("today");
+      html += `<div class="${cls.join(" ")}" title="${esc(`${WD[dow(t)]} ${longDate(t)}${hol ? " – " + hol : ""}`)}">${d}</div>`;
+    }
+    html += `</div><div class="dek">${dk.map(x => `<div><i>${x.f}.–${x.l}.</i>${x.days} d · ${fH(x.hours)} h</div>`).join("")}</div></div>`;
+  }
+  html += `</div><h2 class="fh2 brk">Měsíce, dekády, čtvrtletí a pololetí</h2><div class="fwrap"><table class="ftable"><thead><tr><th>Období</th><th>Kal. dny</th><th>Víkendy</th><th>Svátky v prac. dny</th><th>${modeFond ? "Prac. dny" : "Odprac. dny"}</th><th>Hodiny (${unitLabel})</th><th>1. dekáda</th><th>2. dekáda</th><th>3. dekáda</th></tr></thead><tbody>`;
+  for (const r of fondRows(y)) {
+    const st = stats(r.a, r.b), dk = r.kind === "m" ? decades(y, r.m) : null;
+    html += `<tr class="${r.kind === "m" ? "" : r.kind}"><td>${r.label}</td><td>${st.kal}</td><td>${st.wend}</td><td class="${st.hol && r.kind === "m" ? "hl" : ""}">${st.hol}</td><td>${st.days}</td><td><b>${fH(st.hours)}</b></td>${dk ? dk.map(x => `<td class="muted">${x.days} d · ${fH(x.hours)} h</td>`).join("") : "<td></td><td></td><td></td>"}</tr>`;
+  }
+  html += `</tbody></table></div><h2 class="fh2">Týdny</h2><div class="weeks">`;
+  for (const w of weeksOf(y)) {
+    html += `<div class="wkc${w.part ? " part" : ""}${w.hols.length ? " holw" : ""}" title="${esc(w.hols.map(t => `${D(t)}. ${M(t) + 1}. ${holiday(t)}`).join("\n"))}"><b>${w.n}. týden</b><div class="r"><span>${D(w.mon)}. ${M(w.mon) + 1}.–${D(w.sun)}. ${M(w.sun) + 1}.</span></div>
+      <div class="r"><span>${modeFond ? "Prac. dny" : "Odprac."}</span><strong>${w.days}</strong></div><div class="r"><span>Hodiny</span><strong>${fH(w.hours)}</strong></div>${w.hols.length ? `<div class="r" style="color:var(--red)"><span>Svátky</span><strong style="color:var(--red)">${w.hols.length}</strong></div>` : ""}${w.part ? `<div class="r"><span>jen dny v roce ${y}</span></div>` : ""}</div>`;
+  }
+  html += `</div>`;
+  host.innerHTML = html;
+  $("#fWeekly").value = String(FOND.weekly);
+  const saveF = () => { store.set("fond", FOND); render(); };
+  $("#fWeekly").onchange = e => { FOND.weekly = e.target.value === "custom" ? "custom" : +e.target.value; saveF(); };
+  $("#fCustom").onchange = e => { FOND.custom = Math.min(60, Math.max(1, +e.target.value || 40)); saveF(); };
+  $("#fUvazek").onchange = e => { FOND.uvazek = Math.min(100, Math.max(1, +e.target.value || 100)); saveF(); };
+  $$("[data-fmode]").forEach(b => b.onclick = () => { FOND.mode = b.dataset.fmode; saveF(); });
+  $("#fCsv").onclick = () => exportFondCsv(y);
+}
+function exportFondCsv(y) {
+  const h = dayHours(), n = x => String(Math.round(x * 100) / 100).replace(".", ","), L = [];
+  L.push(`Fond pracovní doby ${y};Týdenní pracovní doba ${n(FOND.weekly === "custom" ? FOND.custom : FOND.weekly)} h;Úvazek ${FOND.uvazek} %;Denně ${n(h)} h`, "");
+  L.push("Období;Kalendářní dny;Víkendové dny;Svátky v pracovní dny;Pracovní dny vč. svátků (fond);Dny k odpracování;Fond (h);K odpracování (h)");
+  for (const r of fondRows(y)) { const st = stats(r.a, r.b); L.push([r.label, st.kal, st.wend, st.hol, st.mf, st.work, n(st.fondH), n(st.workH)].join(";")); }
+  L.push("", "Měsíc;Dekáda;Pracovní dny vč. svátků;Dny k odpracování;Fond (h);K odpracování (h)");
+  for (let m = 0; m < 12; m++) for (const x of decades(y, m)) L.push([MONTHS[m], `${x.f}.–${x.l}.`, x.mf, x.work, n(x.fondH), n(x.workH)].join(";"));
+  L.push("", "Týden;Od;Do;Pracovní dny vč. svátků;Dny k odpracování;Fond (h);K odpracování (h);Svátky");
+  for (const w of weeksOf(y)) L.push([w.n, toS(w.a), toS(w.b), w.mf, w.work, n(w.fondH), n(w.workH), w.hols.map(t => holiday(t)).join(", ")].join(";"));
+  download(`fond-pracovni-doby-${y}.csv`, "\ufeff" + L.join("\r\n") + "\r\n", "text/csv;charset=utf-8");
+  toast("Soubor CSV uložen – otevřete ho v Excelu.");
+}
+
 /* ---------- ovládání ---------- */
 function move(dir) {
   if (S.view === "month") S.cur = addMonths(Date.UTC(Y(S.cur), M(S.cur), 1), dir);
@@ -316,10 +414,10 @@ $$("dialog [data-close]").forEach(b => b.onclick = () => b.closest("dialog").clo
 /* ---------- tisk ---------- */
 $("#printBtn").onclick = () => {
   document.body.classList.add("p-" + S.view);
-  const ori = S.view === "year" ? "portrait" : "landscape";
+  const ori = S.view === "year" || S.view === "fond" ? "portrait" : "landscape";
   const st = document.createElement("style"); st.id = "pageOri"; st.textContent = `@page{size:A4 ${ori};margin:10mm}`; document.head.appendChild(st);
   window.print();
-  setTimeout(() => { document.body.classList.remove("p-month", "p-week", "p-year"); st.remove(); }, 600);
+  setTimeout(() => { document.body.classList.remove("p-month", "p-week", "p-year", "p-fond"); st.remove(); }, 600);
 };
 
 /* ---------- záloha a export ---------- */
