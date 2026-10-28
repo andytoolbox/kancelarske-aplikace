@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kancelářské aplikace</title>
+<meta name="description" content="Bezplatné kancelářské aplikace, které běží přímo v prohlížeči. Soubory se nikam neodesílají.">
+<link rel="icon" href="apps.svg" type="image/svg+xml">
+<style>
+:root{--bg:#EFF5FB;--surface:#FFFFFF;--ink:#172A3A;--muted:#4F6275;--line:#CFDDEC;--accent:#2B6CB0;--accent-ink:#FFFFFF;--soft:#E1EDF9;
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1720;--surface:#17222E;--ink:#E6EEF6;--muted:#9FB2C4;--line:#2A3A4B;--accent:#7DB5EC;--accent-ink:#0F1720;--soft:#1E3044;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1720;--surface:#17222E;--ink:#E6EEF6;--muted:#9FB2C4;--line:#2A3A4B;--accent:#7DB5EC;--accent-ink:#0F1720;--soft:#1E3044;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+:focus-visible{outline:3px solid #7CC4F0;outline-offset:3px}
+.wrap{width:min(1040px,100%);margin:0 auto;padding:48px clamp(16px,4vw,32px) 32px;flex:1}
+header{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+header img{flex:none}
+h1{font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.15;margin:0;letter-spacing:-.01em}
+.lead{color:var(--muted);font-size:1.08rem;margin:0 0 36px;max-width:60ch}
+.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.app{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+.app:hover{border-color:var(--accent);transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){.app{transition:none}.app:hover{transform:none}}
+.app .head{display:flex;align-items:center;gap:14px}
+.app h2{font-size:1.25rem;margin:0}
+.app p{margin:0;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:4px}
+.tags span{background:var(--soft);border-radius:20px;padding:2px 10px;font-size:.82rem}
+.open{align-self:flex-start;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 16px;font-weight:600;margin-top:6px}
+.note{margin-top:32px;color:var(--muted);font-size:.95rem}
+footer{width:min(1040px,100%);margin:0 auto;padding:0 clamp(16px,4vw,32px) 28px;color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><img src="apps.svg" width="56" height="56" alt=""><h1>Kancelářské aplikace</h1></header>
+  <p class="lead">Bezplatné nástroje pro běžnou kancelářskou práci. Běží přímo v prohlížeči, nic se neinstaluje a soubory se nikam neodesílají.</p>
+
+  <main class="apps">
+    <a class="app" href="pdf/index.html">
+      <div class="head"><img src="pdf/icon.svg" width="64" height="64" alt=""><h2>Andy PDF</h2></div>
+      <p>Úpravy PDF: slučování, otáčení a mazání stránek, oprava textu, podpisy a razítka ze skenu, formuláře, tisk.</p>
+      <div class="tags"><span>PDF</span><span>Podpisy</span><span>Formuláře</span></div>
+      <span class="open">Otevřít Andy PDF</span>
+    </a>
+  </main>
+
+  <p class="note">Další aplikace postupně přibudou.</p>
+</div>
+<footer><span>Vše běží ve vašem prohlížeči.</span><i>Created by Julius Andy Antoš</i></footer>
+</body>
+</html>

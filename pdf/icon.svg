@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path d="M24 27 L47 32 L31 40.5 Z" fill="#0F2A44"/>
+  <g transform="translate(4 1) rotate(-18 21 40)">
+    <path d="M7 21 h20 l9 9 v28 a2 2 0 0 1 -2 2 H9 a2 2 0 0 1 -2 -2 Z" fill="#FFFFFF" stroke="#9FB7CE" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M27 21 v9 h9" fill="#E3ECF5" stroke="#9FB7CE" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M11 32 h12 M11 36 h9" stroke="#C3D3E3" stroke-width="2" stroke-linecap="round"/>
+    <rect x="4" y="41" width="23" height="10.5" rx="2" fill="#D93025"/>
+    <text x="15.5" y="49.6" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="8.4" text-anchor="middle" fill="#FFFFFF">PDF</text>
+  </g>
+  <path d="M39 16.5 L46 4.5 L49.5 17.5 Z" fill="#245C96"/>
+  <path d="M24 27 C30 17 43 13.5 52.5 18.5 C56 20.5 58 23.5 59 26 L63.5 16.5 L61.5 30.5 L63.5 44.5 L58.5 34.5 C54 41 45 45 37 43 C34 42.3 32 41.5 31 40.5 L47 32 Z" fill="#2B6CB0"/>
+  <path d="M31 40.5 L47 32 C48 35.5 52.5 36.5 58.5 34.5 C54 41 45 45 37 43 C34 42.3 32 41.5 31 40.5 Z" fill="#9CCBF2"/>
+  <path d="M25.5 27.6 l1.8 3.4 l1.6 -2.9 l1.8 3.3 l1.6 -2.8 l1.8 3.2 l1.6 -2.7 l1.8 3.1 l1.6 -2.6 l1.8 3 l1.5 -2.4 l1.6 2.6 l1.2 -1.9 Z" fill="#FFFFFF" stroke="#4F6F8F" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32.6 39.7 l1.1 -3.4 l1.8 2.6 l1.1 -3.4 l1.8 2.4 l1.1 -3.3 l1.8 2.2 l1.1 -3.1 l1.7 1.9 l1 -2.6 l1.3 1.3 Z" fill="#FFFFFF" stroke="#4F6F8F" stroke-width="0.6" stroke-linejoin="round"/>
+  <circle cx="35.5" cy="21.8" r="2.3" fill="#0F2A44"/>
+  <circle cx="36.3" cy="21" r="0.8" fill="#FFFFFF"/>
+  <path d="M48.5 22.5 q-1.3 4 0 8 M51.5 22 q-1.3 4.5 0 9 M54.5 22.5 q-1.2 4.5 0 9" fill="none" stroke="#1E4E80" stroke-width="1.3" stroke-linecap="round"/>
+</svg>
