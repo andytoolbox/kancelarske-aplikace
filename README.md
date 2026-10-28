@@ -11,6 +11,7 @@ Sbírka bezplatných kancelářských nástrojů, které běží přímo v prohl
 | | Aplikace | Adresa |
 |---|---|---|
 | <img src="pdf/icon.svg" width="48" alt=""> | **Andy PDF** – úpravy PDF | [Otevřít Andy PDF](https://andytoolbox.github.io/kancelarske-aplikace/pdf/) |
+| <img src="kalkulacka/icon.svg" width="48" alt=""> | **Andy Kalkulačka** – vědecká kalkulačka, DPH, data, převody | [Otevřít kalkulačku](https://andytoolbox.github.io/kancelarske-aplikace/kalkulacka/) |
 
 ---
 
@@ -44,6 +45,20 @@ Vše je přibaleno ve složkách `lib` a `fonts`, aplikace nic nestahuje z inter
 | Poppins | SIL Open Font License 1.1 |
 
 Písma jsou zmenšená na latinku (včetně češtiny), řečtinu a azbuku.
+
+## Andy Kalkulačka
+
+- **Vědecká kalkulačka:** závorky, mocniny, odmocniny, goniometrické funkce (stupně i radiány), logaritmy, faktoriál, π, e, paměť (MC, MR, M+, M−), lze psát i z klávesnice
+- **Procenta jako u stolní kalkulačky:** 200 + 10 % = 220
+- **Páska:** historie výpočtů se součtem, kopírování a tisk; zůstane uložená i po zavření
+- **DPH:** sazby 21 % a 12 % (platné v roce 2026), 0 % i vlastní sazba; výpočet zdola i shora, zaokrouhlení na haléře nebo koruny
+- **Procenta:** podíl, změna v %, sleva, přirážka a marže, původní cena před slevou
+- **Data a dny:** rozdíl mezi daty, pracovní dny bez víkendů a státních svátků ČR, splatnost (+14 dní apod.), číslo týdne, přehled svátků
+- **Převody:** měny podle kurzů ČNB (služba [Frankfurter](https://frankfurter.dev), bez registrace) nebo vlastní kurz; délka, plocha, objem, hmotnost, teplota, čas, rychlost, energie, data
+
+Do všech polí lze psát i výpočty, např. `1200*3`.
+
+---
 
 ## Jak zveřejnit na GitHubu
 

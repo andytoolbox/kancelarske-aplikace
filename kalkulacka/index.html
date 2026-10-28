@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andy Kalkulačka – vědecká kalkulačka, DPH, data a převody</title>
+<meta name="description" content="Bezplatná vědecká kalkulačka s páskou, výpočtem DPH a procent, počítáním dnů a pracovních dnů a převody jednotek a měn podle ČNB.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#EFF5FB;--surface:#FFFFFF;--ink:#172A3A;--muted:#4F6275;--line:#CFDDEC;
+  --accent:#2B6CB0;--accent-ink:#FFFFFF;--soft:#E1EDF9;--soft2:#F3F8FD;--hi:#7CC4F0;--ok:#2F6B4F;--danger:#B3261E;
+  --key:#FFFFFF;--keyop:#E1EDF9;--keyfn:#F3F8FD;--display:#172A3A;--display-ink:#E6EEF6;--tape:#FFFDF6;--tape-line:#E9E2CF;
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1720;--surface:#17222E;--ink:#E6EEF6;--muted:#9FB2C4;--line:#2A3A4B;
+  --accent:#7DB5EC;--accent-ink:#0F1720;--soft:#1E3044;--soft2:#1A2836;--hi:#7CC4F0;--ok:#72C79E;--danger:#F2867E;
+  --key:#1E2B39;--keyop:#24405C;--keyfn:#1A2733;--display:#0A1118;--display-ink:#E6EEF6;--tape:#1C2530;--tape-line:#2A3644;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1720;--surface:#17222E;--ink:#E6EEF6;--muted:#9FB2C4;--line:#2A3A4B;
+  --accent:#7DB5EC;--accent-ink:#0F1720;--soft:#1E3044;--soft2:#1A2836;--hi:#7CC4F0;--ok:#72C79E;--danger:#F2867E;
+  --key:#1E2B39;--keyop:#24405C;--keyfn:#1A2733;--display:#0A1118;--display-ink:#E6EEF6;--tape:#1C2530;--tape-line:#2A3644;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;font-size:16px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+[hidden]{display:none!important}
+h1,h2,h3{line-height:1.2;margin:0}
+.num{font-variant-numeric:tabular-nums}
+
+.top{display:flex;align-items:center;gap:12px;padding:18px clamp(16px,3vw,32px) 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;min-width:0}
+.brand h1{font-size:1.45rem;letter-spacing:-.01em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:.92rem}
+.tabs{display:flex;gap:4px;padding:18px clamp(16px,3vw,32px) 0;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{appearance:none;background:none;border:0;padding:10px 14px 12px;font-weight:700;color:var(--muted);cursor:pointer;position:relative;white-space:nowrap;border-radius:8px 8px 0 0}
+.tab:hover{color:var(--ink);background:var(--soft)}
+.tab[aria-selected="true"]{color:var(--ink)}
+.tab[aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:4px;border-radius:4px 4px 0 0;background:var(--accent)}
+main{padding:24px clamp(16px,3vw,32px) 32px;flex:1;width:100%;max-width:1280px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card h2{font-size:1.1rem;margin-bottom:12px}
+.hint{color:var(--muted);font-size:.9rem;margin:0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px}
+.btn:hover{border-color:var(--accent);background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{min-height:32px;padding:4px 10px;font-size:.88rem}
+.btn.danger{color:var(--danger)}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.9rem;font-weight:600;min-width:0}
+.field input,.field select{font-weight:400;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;font-size:1.02rem;width:100%;min-width:0}
+.field input.big{font-size:1.25rem;font-weight:600}
+.row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.row>.field{flex:1;min-width:120px}
+.check{display:flex;gap:8px;align-items:center;font-size:.95rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
+.seg button{appearance:none;border:0;border-right:1px solid var(--line);background:var(--surface);padding:8px 14px;cursor:pointer;font-weight:600}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.out{background:var(--soft2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px}
+.out .big{font-size:1.45rem;font-weight:700}
+.out .sub{color:var(--muted);font-size:.92rem}
+.outrow{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.err{color:var(--danger)}
+
+/* kalkulačka */
+.calcwrap{display:grid;grid-template-columns:minmax(0,560px) minmax(260px,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.calcwrap{grid-template-columns:1fr}}
+.display{background:var(--display);color:var(--display-ink);border-radius:14px;padding:12px 16px 14px;margin-bottom:14px}
+.dtop{display:flex;align-items:center;gap:10px;font-size:.82rem;opacity:.9;margin-bottom:6px}
+.dtop button{appearance:none;border:1px solid rgba(255,255,255,.3);background:transparent;color:inherit;border-radius:6px;padding:2px 8px;font-weight:700;cursor:pointer;font-size:.8rem}
+.dtop .mem{background:rgba(124,196,240,.25);border-radius:6px;padding:2px 8px}
+.dtop .sp{margin-left:auto;opacity:.7}
+#expr{width:100%;background:transparent;border:0;color:var(--display-ink);font-size:1.35rem;font-family:ui-monospace,"Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;padding:4px 0;text-align:right;outline:none}
+#expr::placeholder{color:rgba(230,238,246,.35)}
+#result{font-size:2.3rem;font-weight:700;text-align:right;min-height:3.1rem;overflow-x:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+#result.pre{opacity:.55;font-weight:500;font-size:1.6rem;padding-top:8px}
+#result.bad{color:#F2A29C;font-size:1.2rem;padding-top:14px;font-weight:600}
+.keys{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.k{appearance:none;border:1px solid var(--line);background:var(--key);border-radius:10px;min-height:50px;font-size:1.08rem;font-weight:600;cursor:pointer;padding:0 2px;touch-action:manipulation}
+.k:hover{border-color:var(--accent)}
+.k:active{transform:translateY(1px)}
+.k.fn{background:var(--keyfn);font-size:.95rem;font-weight:500}
+.k.op{background:var(--keyop);font-size:1.25rem}
+.k.mem{background:var(--keyfn);font-size:.85rem;font-weight:600;color:var(--muted)}
+.k.eq{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:1.4rem}
+.k.clr{color:var(--danger)}
+@media (max-width:480px){.keys{gap:5px}.k{min-height:46px;font-size:1rem}.k.fn{font-size:.82rem}}
+
+.tape{background:var(--tape);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;max-height:calc(100vh - 210px);min-height:360px}
+.tapehead{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px dashed var(--tape-line)}
+.tapehead h2{font-size:1.05rem;margin-right:auto}
+#tapeList{list-style:none;margin:0;padding:6px 14px;overflow:auto;flex:1;font-family:ui-monospace,"Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace}
+#tapeList li{padding:8px 4px;border-bottom:1px dashed var(--tape-line);cursor:pointer;border-radius:6px}
+#tapeList li:hover{background:var(--soft)}
+#tapeList .e{color:var(--muted);font-size:.85rem;text-align:right;word-break:break-all}
+#tapeList .r{text-align:right;font-weight:700;font-size:1.05rem}
+#tapeList .t{color:var(--muted);font-size:.72rem}
+.tapefoot{border-top:2px solid var(--tape-line);padding:10px 14px;display:flex;justify-content:space-between;font-family:ui-monospace,Consolas,monospace;font-weight:700}
+.tapeempty{color:var(--muted);text-align:center;padding:30px 10px;font-family:inherit;cursor:default!important}
+
+table.list{width:100%;border-collapse:collapse;font-size:.95rem}
+table.list td{padding:6px 4px;border-bottom:1px solid var(--line)}
+table.list td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.list tr.hl td{background:var(--soft);font-weight:700}
+
+footer{padding:0 clamp(16px,3vw,32px) 24px;color:var(--muted);font-size:.85rem;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;max-width:1280px;margin:0 auto;width:100%}
+footer a{color:inherit}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+#printArea{display:none}
+@media print{
+  body.printing>*:not(#printArea){display:none!important}
+  body.printing #printArea{display:block;font-family:Consolas,monospace;color:#000}
+  #printArea .pe{border-bottom:1px dashed #999;padding:4px 0}
+  #printArea .r{text-align:right;font-weight:700}
+  #printArea .e{text-align:right;color:#444;font-size:.85em}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <img src="icon.svg" width="56" height="56" alt="" style="flex:none">
+    <div><h1>Andy Kalkulačka</h1><p>Vědecká kalkulačka s páskou, DPH, data a převody. Vše běží ve vašem prohlížeči.</p></div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Části kalkulačky">
+  <button class="tab" role="tab" data-tab="calc" aria-selected="true">Kalkulačka</button>
+  <button class="tab" role="tab" data-tab="vat" aria-selected="false">DPH a procenta</button>
+  <button class="tab" role="tab" data-tab="dates" aria-selected="false">Data a dny</button>
+  <button class="tab" role="tab" data-tab="conv" aria-selected="false">Převody</button>
+</nav>
+
+<main>
+  <!-- KALKULAČKA -->
+  <section data-panel="calc">
+    <div class="calcwrap">
+      <div>
+        <div class="display">
+          <div class="dtop">
+            <button id="angleBtn" title="Úhly ve stupních (DEG) nebo radiánech (RAD)">DEG</button>
+            <span class="mem" id="memInd" hidden></span>
+            <span class="sp">Lze psát i z klávesnice · Enter = výsledek</span>
+          </div>
+          <input id="expr" autocomplete="off" spellcheck="false" placeholder="0" aria-label="Výraz k výpočtu">
+          <div id="result" class="num" aria-live="polite">0</div>
+        </div>
+        <div class="keys" id="keys">
+          <button class="k mem" data-act="mc" title="Vymazat paměť">MC</button>
+          <button class="k mem" data-act="mr" title="Vložit z paměti">MR</button>
+          <button class="k mem" data-act="mplus" title="Přičíst do paměti">M+</button>
+          <button class="k mem" data-act="mminus" title="Odečíst z paměti">M−</button>
+          <button class="k fn" data-ins="(">(</button>
+          <button class="k fn" data-ins=")">)</button>
+          <button class="k clr" data-act="ac" title="Smazat vše (Esc)">AC</button>
+
+          <button class="k fn" data-ins="sin(">sin</button>
+          <button class="k fn" data-ins="cos(">cos</button>
+          <button class="k fn" data-ins="tan(">tan</button>
+          <button class="k" data-ins="7">7</button>
+          <button class="k" data-ins="8">8</button>
+          <button class="k" data-ins="9">9</button>
+          <button class="k op" data-ins="÷" aria-label="děleno">÷</button>
+
+          <button class="k fn" data-ins="asin(" title="arkus sinus">sin⁻¹</button>
+          <button class="k fn" data-ins="acos(" title="arkus kosinus">cos⁻¹</button>
+          <button class="k fn" data-ins="atan(" title="arkus tangens">tan⁻¹</button>
+          <button class="k" data-ins="4">4</button>
+          <button class="k" data-ins="5">5</button>
+          <button class="k" data-ins="6">6</button>
+          <button class="k op" data-ins="×" aria-label="krát">×</button>
+
+          <button class="k fn" data-ins="ln(" title="přirozený logaritmus">ln</button>
+          <button class="k fn" data-ins="log(" title="dekadický logaritmus">log</button>
+          <button class="k fn" data-ins="√(" title="odmocnina">√</button>
+          <button class="k" data-ins="1">1</button>
+          <button class="k" data-ins="2">2</button>
+          <button class="k" data-ins="3">3</button>
+          <button class="k op" data-ins="−" aria-label="mínus">−</button>
+
+          <button class="k fn" data-ins="^2" title="na druhou">x²</button>
+          <button class="k fn" data-ins="^" title="mocnina">xʸ</button>
+          <button class="k fn" data-ins="!" title="faktoriál">n!</button>
+          <button class="k" data-ins="0">0</button>
+          <button class="k" data-ins="," aria-label="desetinná čárka">,</button>
+          <button class="k fn" data-ins="%" title="procento (200 + 10 % = 220)">%</button>
+          <button class="k op" data-ins="+" aria-label="plus">+</button>
+
+          <button class="k fn" data-ins="π">π</button>
+          <button class="k fn" data-ins="e" title="Eulerovo číslo">e</button>
+          <button class="k fn" data-act="inv" title="převrácená hodnota">1/x</button>
+          <button class="k fn" data-ins="abs(" title="absolutní hodnota">|x|</button>
+          <button class="k fn" data-ins="Ans" title="poslední výsledek">Ans</button>
+          <button class="k fn" data-act="back" title="Smazat znak (Backspace)" aria-label="smazat znak">⌫</button>
+          <button class="k eq" data-act="eq" aria-label="rovná se">=</button>
+        </div>
+      </div>
+
+      <aside class="tape" aria-label="Páska">
+        <div class="tapehead">
+          <h2>Páska</h2>
+          <button class="btn sm" id="tapeCopy">Kopírovat</button>
+          <button class="btn sm" id="tapePrint">Tisk</button>
+          <button class="btn sm danger" id="tapeClear">Vymazat</button>
+        </div>
+        <ul id="tapeList"></ul>
+        <div class="tapefoot"><span>Σ součet</span><span id="tapeSum" class="num">0</span></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- DPH A PROCENTA -->
+  <section data-panel="vat" hidden>
+    <div class="card" style="margin-bottom:20px">
+      <h2>DPH</h2>
+      <div class="row" style="margin-bottom:14px">
+        <div>
+          <div class="field"><span>Sazba DPH</span></div>
+          <div class="seg" id="vatRates" role="group" aria-label="Sazba DPH">
+            <button data-rate="21" aria-pressed="true">21 %</button>
+            <button data-rate="12" aria-pressed="false">12 %</button>
+            <button data-rate="0" aria-pressed="false">0 %</button>
+            <button data-rate="custom" aria-pressed="false">Jiná</button>
+          </div>
+        </div>
+        <label class="field" id="vatCustomWrap" hidden style="max-width:120px"><span>Vlastní sazba %</span><input id="vatCustom" inputmode="decimal" value="15"></label>
+        <label class="field" style="max-width:220px"><span>Zaokrouhlení DPH</span>
+          <select id="vatRound"><option value="2">Na haléře</option><option value="0">Na celé koruny</option></select></label>
+      </div>
+      <div class="grid3">
+        <label class="field"><span>Cena bez DPH</span><input class="big num" id="vBez" inputmode="decimal" placeholder="0,00"></label>
+        <label class="field"><span>DPH</span><input class="big num" id="vDph" inputmode="decimal" placeholder="0,00"></label>
+        <label class="field"><span>Cena s DPH</span><input class="big num" id="vS" inputmode="decimal" placeholder="0,00"></label>
+      </div>
+      <div class="out outrow" id="vatOut"><span class="sub">Vyplňte kterékoli pole – ostatní se dopočítají. Do polí lze psát i výpočty, např. 1200*3.</span></div>
+      <div class="row" style="margin-top:10px"><button class="btn sm" id="vatTape">Na pásku</button><button class="btn sm" id="vatClear">Vymazat</button></div>
+    </div>
+
+    <h2 style="font-size:1.1rem;margin:0 0 12px">Procenta</h2>
+    <div class="grid3" id="pctCards"></div>
+  </section>
+
+  <!-- DATA A DNY -->
+  <section data-panel="dates" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h2>Rozdíl mezi daty</h2>
+        <div class="row">
+          <label class="field"><span>Od</span><input type="date" id="dFrom"></label>
+          <label class="field"><span>Do</span><input type="date" id="dTo"></label>
+        </div>
+        <label class="check" style="margin-top:10px"><input type="checkbox" id="dIncl"> Počítat včetně posledního dne</label>
+        <div class="out" id="diffOut"></div>
+      </div>
+      <div class="card">
+        <h2>Přičíst nebo odečíst (splatnost)</h2>
+        <div class="row">
+          <label class="field"><span>Datum</span><input type="date" id="aDate"></label>
+          <label class="field" style="max-width:90px"><span>&nbsp;</span><select id="aSign"><option value="1">+</option><option value="-1">−</option></select></label>
+          <label class="field" style="max-width:110px"><span>Počet</span><input id="aN" inputmode="numeric" value="14"></label>
+          <label class="field"><span>Jednotka</span><select id="aUnit"><option value="d">dní</option><option value="w">pracovních dní</option><option value="wk">týdnů</option><option value="m">měsíců</option><option value="y">let</option></select></label>
+        </div>
+        <div class="row" style="margin-top:10px" id="aPresets">
+          <button class="btn sm" data-p="7">+7 dní</button><button class="btn sm" data-p="14">+14 dní</button><button class="btn sm" data-p="30">+30 dní</button><button class="btn sm" data-p="60">+60 dní</button>
+        </div>
+        <div class="out" id="addOut"></div>
+      </div>
+      <div class="card">
+        <h2>O datu</h2>
+        <label class="field"><span>Datum</span><input type="date" id="iDate"></label>
+        <div class="out" id="infoOut"></div>
+      </div>
+      <div class="card">
+        <h2>Státní svátky</h2>
+        <label class="field" style="max-width:140px"><span>Rok</span><input id="hYear" inputmode="numeric"></label>
+        <table class="list" id="holTable" style="margin-top:10px"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PŘEVODY -->
+  <section data-panel="conv" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h2>Měny (kurzy ČNB)</h2>
+        <div class="row">
+          <label class="field"><span>Částka</span><input class="big num" id="cAmt" inputmode="decimal" value="100"></label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <label class="field"><span>Z měny</span><select id="cFrom"></select></label>
+          <button class="btn" id="cSwap" title="Prohodit měny" aria-label="Prohodit měny" style="flex:none">⇄</button>
+          <label class="field"><span>Na měnu</span><select id="cTo"></select></label>
+        </div>
+        <div class="out" id="curOut"></div>
+        <div class="row" style="margin-top:10px;align-items:center">
+          <label class="check"><input type="checkbox" id="cOwn"> Vlastní kurz</label>
+          <label class="field" id="cOwnWrap" hidden style="max-width:240px"><span id="cOwnLabel">1 EUR = ? CZK</span><input id="cOwnRate" inputmode="decimal"></label>
+        </div>
+        <p class="hint" id="curInfo" style="margin-top:10px"></p>
+        <div class="row" style="margin-top:8px"><button class="btn sm" id="cRefresh">Aktualizovat kurzy</button><button class="btn sm" id="cTape">Na pásku</button></div>
+      </div>
+      <div class="card">
+        <h2>Jednotky</h2>
+        <div class="row">
+          <label class="field"><span>Veličina</span><select id="uCat"></select></label>
+          <label class="field"><span>Hodnota</span><input class="big num" id="uVal" inputmode="decimal" value="1"></label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <label class="field"><span>Z</span><select id="uFrom"></select></label>
+          <button class="btn" id="uSwap" title="Prohodit jednotky" aria-label="Prohodit jednotky" style="flex:none">⇄</button>
+          <label class="field"><span>Na</span><select id="uTo"></select></label>
+        </div>
+        <div class="out" id="uOut"></div>
+        <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Převod na všechny jednotky</summary><table class="list" id="uAll" style="margin-top:8px"></table></details>
+        <div class="row" style="margin-top:10px"><button class="btn sm" id="uTape">Na pásku</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><span><a href="../index.html">Všechny kancelářské aplikace</a> · Vše se počítá ve vašem prohlížeči.</span><i>Created by Julius Andy Antoš</i></footer>
+<div id="printArea"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
