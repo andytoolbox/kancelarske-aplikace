@@ -12,6 +12,7 @@ Sbírka bezplatných kancelářských nástrojů, které běží přímo v prohl
 |---|---|---|
 | <img src="pdf/icon.svg" width="48" alt=""> | **Andy PDF** – úpravy PDF | [Otevřít Andy PDF](https://andytoolbox.github.io/kancelarske-aplikace/pdf/) |
 | <img src="kalkulacka/icon.svg" width="48" alt=""> | **Andy Kalkulačka** – vědecká kalkulačka, DPH, data, převody | [Otevřít kalkulačku](https://andytoolbox.github.io/kancelarske-aplikace/kalkulacka/) |
+| <img src="kalendar/icon.svg" width="48" alt=""> | **Andy Kalendář** – svátky, jmeniny, plánování | [Otevřít kalendář](https://andytoolbox.github.io/kancelarske-aplikace/kalendar/) |
 
 ---
 
@@ -57,6 +58,19 @@ Písma jsou zmenšená na latinku (včetně češtiny), řečtinu a azbuku.
 - **Převody:** měny podle kurzů ČNB (služba [Frankfurter](https://frankfurter.dev), bez registrace) nebo vlastní kurz; délka, plocha, objem, hmotnost, teplota, čas, rychlost, energie, data
 
 Do všech polí lze psát i výpočty, např. `1200*3`.
+
+---
+
+## Andy Kalendář
+
+- **Klasický český kalendář:** státní svátky (včetně Velikonoc), jmeniny na každý den, čísla týdnů, volitelně významné dny (Den matek, advent, změna času…)
+- **Tři zobrazení:** měsíc jako nástěnný kalendář, týden jako diář s poznámkami, celý rok na jedné stránce
+- **Události:** čas, místo, poznámka, barva, vícedenní akce; opakování denně, každý pracovní den, týdně, po 2 týdnech, měsíčně, ročně (narozeniny); smazání jen jednoho výskytu
+- **Úkoly:** s termínem i bez, po termínu / dnes / nadcházející, odškrtávání
+- **Tisk** měsíce, týdne i roku; **záloha** do souboru a **export do Outlooku / Google Kalendáře** (.ics)
+- Vše se ukládá jen v prohlížeči daného počítače – pro přenos na jiný počítač použijte zálohu.
+
+Jmeniny pocházejí z knihovny [namedays-cs](https://github.com/OzzyCzech/namedays-cs) (MIT, © Roman Ožana).
 
 ---
 
